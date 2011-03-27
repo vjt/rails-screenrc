@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Loops over the given command forever. I'm currently lazy to
+# document it, so move your ass and read on. :-)
+
 # parse args
 args=`getopt ris:d:u: $*`
 if test $? != 0; then
