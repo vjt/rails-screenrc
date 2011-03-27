@@ -1,0 +1,51 @@
+# vim: syn=screen
+
+# screenrc for Rails developers. Creates 7 windows and runs, repeatedly,
+# the same commands inside them. This way, when you wanna restart the
+# appserver or the console, you've got them just a ^C/^D away.
+#
+# The looping over commands is implemented by the loopover.sh script,
+# that you should install in your ~/bin or somewhere else - as long as
+# the path to it is set below.
+#
+# I'm using ^F as an escape sequence in order to not kill the useful
+# go-to-line-beginning ^A.
+#
+# Originally written by nextie@break.net
+# Customized by vjt@openssl.it
+#  - vjt  Sat Mar 26 19:01:03 CET 2011
+
+# Session options
+
+sessionname YOUR-SESSION-NAME
+chdir       /path/to/your/app
+setenv loop $HOME/bin/loopover.sh
+shell bash
+
+# General options
+
+escape ^Ff
+defutf8 on
+deflogin off
+defscrollback 5000
+
+# Status line
+
+bindkey -k k9 hardstatus alwayslastline
+bindkey -k k9 hardstatus alwaysignore
+hardstatus alwayslastline "%{= kB} %-Lw%50>%{= kR}%n%f* %{= kB}%t%+Lw%<"
+caption    splitonly      "%{= dC} %-Lw%50>%{= dR}%n%f* %{= dC}%t%+Lw%<"
+
+# Window definitions
+
+screen -t logs    $loop -i  -- tail -f log/development.log
+screen -t server  $loop -ri -- unicorn -c config/unicorn.development.rb
+screen -t console $loop -r  -- rails c 
+screen -t app     $loop -r  -- vi .
+screen -t gems    $loop -ri -- vi \$GEM_HOME
+screen -t code    $loop     -- bash
+screen -t scm     $loop     -- bash
+
+select 1
+
+# EOF
